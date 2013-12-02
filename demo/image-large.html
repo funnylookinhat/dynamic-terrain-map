@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+	<head>
+		<title>DynamicTerrainMap - Large Image Demo ( 9400x9400 )</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script src="js/three.js/three.min.js"></script>
+		<script src="js/three.js/Detector.js"></script>
+		<script src="js/three.js/Stats.js"></script>
+
+		<script src="js/threex/THREEx.screenshot.js"></script>
+		<script src="js/threex/THREEx.FullScreen.js"></script>
+		<script src="js/threex/THREEx.WindowResize.js"></script>
+
+		<script src="js/GenericTerrainMaterial.js"></script>
+		<script src="js/GenericWireframeMaterial.js"></script>
+		<script src="js/MapControls.js"></script>
+
+		<script src="../src/DynamicTerrainMap.js"></script>
+		<script src="../src/DynamicTerrainMapChunk.js"></script>
+		<script src="../src/DynamicTerrainMapChunkBuilder.js"></script>
+		<!-- REQUIRED: <script src="../src/DynamicTerrainMapChunkWorker.js"></script> -->
+
+		<link href="css/main.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div id="container"></div>
+		<div id="info">
+			<div class="top">
+				<a href="http://github.com/funnylookinhat/dynamic-terrain-map">THREE.DynamicTerrainMap</a> - Large Image Demo ( 9400x9400 )
+			</div>
+			<div class="bottom" id="inlineDoc" >
+				wasd = move camera, qe = rotate camera, rf = adjust camera height, scrollwheel = zoom in/out
+			</div> 
+		</div> 
+
+		<script id="waterVertexShader" type="x-shader/x-fragment">
+			uniform float time;
+			varying vec2 vUv;
+			varying vec3 vPosition;
+			void main( void ) {
+				vUv = uv;
+				vPosition = position;
+				vPosition.y = vPosition.y + 2.0 + 0.5 * sin(radians(( time / 2.0 * 3.1415 ) * vPosition.x / 20.0)) + 0.7 * cos(radians(( time / 2.0 * 3.1415 ) * vPosition.z / 30.0));
+				gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition, 1);
+			}
+		</script>
+
+		<script id="waterFragmentShader" type="x-shader/x-vertex">
+			varying vec2 vUv;
+			varying vec3 vPosition;
+			void main()
+			{
+				gl_FragColor = vec4(51.0/255.0, 102.0/255.0, (153.0 + vPosition.y * 10.0)/255.0, .7);
+			}
+		</script>
+
+		<script type="text/javascript">
+			var stats, scene, renderer;
+			var camera, cameraControls;
+			var terrainMap;
+			var water;
+
+			init();
+			//animate();
+
+			function init(){
+
+				if( Detector.webgl ){
+					renderer = new THREE.WebGLRenderer({
+						antialias : true,
+						preserveDrawingBuffer : true
+					});
+					renderer.setClearColorHex( 0xBBBBBB, 1 );
+				}
+				else
+				{
+					Detector.addGetWebGLMessage();
+					return false;
+				}
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.getElementById('container').appendChild(renderer.domElement);
+
+				stats = new Stats();
+				stats.domElement.style.position	= 'absolute';
+				stats.domElement.style.bottom	= '0px';
+				document.body.appendChild( stats.domElement );
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 20000 );
+				scene.add(camera);
+
+				var material = new THREE.GenericTerrainMaterial();
+
+				terrainMap = new THREE.DynamicTerrainMap({
+					scene: scene,
+					camera: camera,
+					position: {x: 0, y: 0, z: 0},
+					debugMode: false,
+					workerScriptLocation: '/src/DynamicTerrainMapChunkWorker.js',
+					chunkShowFarthest: true,
+					material: material.generateMaterial(),
+					detailRanges: [100,1500,2500,5000],
+					convertToFloat: function (rgba) {
+						return ( rgba.r + rgba.g + rgba.b) ;
+					}
+				});
+
+				terrainMap.init({
+					imageUrl: 'images/height-test-9400.png'
+				}, function () {
+					animate();
+				});
+
+				cameraControls = new THREE.MapControls({
+					camera: camera,
+					moveCallback: function () {
+						terrainMap.checkGeometry();
+					}
+				});
+				cameraControls.init();
+
+				// Add some water
+				var waterGeometry = new THREE.PlaneGeometry( 10000, 10000, 2, 2 );
+				waterGeometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+				for( var i = 0; i < waterGeometry.vertices.length; i++ ) {
+				  waterGeometry.vertices[i].y = 7.0;
+				}
+				water = new THREE.Mesh(
+					waterGeometry,
+					new THREE.ShaderMaterial({
+						uniforms: {
+							time: { type: 'f', value: 0 }
+						},
+						attributes: {
+							displacement: { type: 'f', value: [] }
+						},
+						vertexShader: document.getElementById( 'waterVertexShader' ).textContent,
+						fragmentShader: document.getElementById( 'waterFragmentShader' ).textContent,
+						transparent: true
+					})
+				);
+
+				water.dynamic = true;
+				water.position.set(0,1,0);
+				scene.add(water);
+
+				// transparently support window resize
+				THREEx.WindowResize.bind(renderer, camera);
+				
+				/*
+				// allow 'p' to make screenshot
+				THREEx.Screenshot.bindKey(renderer);
+				*/
+				/*
+				// allow 'f' to go fullscreen where this feature is supported
+				if( THREEx.FullScreen.available() ){
+					THREEx.FullScreen.bindKey();		
+					document.getElementById('inlineDoc').innerHTML	+= "- <i>f</i> for fullscreen";
+				}
+				*/
+
+				return true;
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				water.material.uniforms.time.value = ( ( new Date().getTime() / 1000 ) % 10 );
+				render();
+				stats.update();
+			}
+
+			function render() {
+				cameraControls.update();
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>
