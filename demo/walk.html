@@ -72,7 +72,7 @@
 				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 20000 );
 				scene.add(camera);
 
-				camera.position.set(1500,1,1500);
+				camera.position.set(1500,20,1500);
 				camera.lookAt({x:0,y:1,z:0});
 
 				var material = new THREE.GenericTerrainMaterial();
@@ -87,7 +87,7 @@
 					material: material.generateMaterial(),
 					detailRanges: [100,750,1500,3000],
 					convertToFloat: function (rgba) {
-						return ( rgba.r + rgba.g + rgba.b) ;
+						return ( rgba.r + rgba.g + rgba.b);
 					}
 				});
 
@@ -122,6 +122,36 @@
 					document.getElementById('inlineDoc').innerHTML	+= "- <i>f</i> for fullscreen";
 				}
 				*/
+				
+				// Pretty it up
+				var path = "images/textures/sunnysky/";
+				var format = '.jpg';
+				var urls = [
+				    path + 'px' + format, path + 'nx' + format,
+				    path + 'py' + format, path + 'ny' + format,
+				    path + 'pz' + format, path + 'nz' + format
+				];
+
+				skyCubemap = THREE.ImageUtils.loadTextureCube( urls );
+
+				var shader = THREE.ShaderLib["cube"];
+				shader.uniforms["tCube"].value = skyCubemap;
+
+				// We're inside the box, so make sure to render the backsides
+				// It will typically be rendered first in the mainScene and without depth so anything else will be drawn in front
+				var skyMaterial = new THREE.ShaderMaterial({
+				    fragmentShader : shader.fragmentShader,
+				    vertexShader   : shader.vertexShader,
+				    uniforms       : shader.uniforms,
+				    depthWrite     : false,
+				    side           : THREE.BackSide
+				});
+
+				// The box dimension size doesn't matter that much when the mainCamera is in the center.  Experiment with the values.
+				skyboxMesh = new THREE.Mesh(new THREE.CubeGeometry(10000, 10000, 10000, 1, 1, 1), skyMaterial);
+
+				scene.add(skyboxMesh);
+
 
 				return true;
 			}
@@ -137,7 +167,7 @@
 			function render() {
 				camera.position.x -= 1.0;
 				camera.position.z -= 1.0;
-				camera.position.y = 1 + terrainMap.heightAt(camera.position.x + terrainMap.width() / 2 , camera.position.z + terrainMap.depth() / 2 );
+				camera.position.y = 2 + terrainMap.heightAt(camera.position.x + terrainMap.width() / 2 , camera.position.z + terrainMap.depth() / 2 );
 				if( i++ % 100 == 0 ) {
 					terrainMap.checkGeometry();
 				}
