@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<title>DynamicTerrainMap - Small Tile Flat World Demo</title>
+		<title>DynamicTerrainMap - Flat World Demo</title>
 		
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
@@ -29,7 +29,7 @@
 		<div id="container"></div>
 		<div id="info">
 			<div class="top">
-				<a href="http://github.com/funnylookinhat/dynamic-terrain-map">THREE.DynamicTerrainMap</a> - Small Tile Flat World Demonstration
+				<a href="http://github.com/funnylookinhat/dynamic-terrain-map">THREE.DynamicTerrainMap</a> - Data Import Demonstration
 			</div>
 			<div class="bottom" id="inlineDoc" >
 				wasd = move camera, qe = rotate camera, rf = adjust camera height, scrollwheel = zoom in/out
@@ -72,6 +72,18 @@
 				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 20000 );
 				scene.add(camera);
 
+				// Fun Data Generation
+				function generateDataPoint(x,z) {
+					return ( 25 * Math.cos(x / 100) + 25 * Math.sin(z / 100) );
+				}
+
+				var dataArray = new Float32Array(2500 * 2500);
+				for( var x = 0; x < 2500; x++ ) {
+					for( var z = 0; z < 2500; z++ ) {
+						dataArray[( x * 2500 + z )] = generateDataPoint( x - 1250 , z - 1250 );
+					}
+				}
+
 				terrainMap = new THREE.DynamicTerrainMap({
 					scene: scene,
 					camera: camera,
@@ -79,13 +91,13 @@
 					debugMode: true,
 					workerScriptLocation: '/src/DynamicTerrainMapChunkWorker.js',
 					chunkShowFarthest: false,
-					detailRanges: [50,100,250,1000],
-					mapChunkSize: 100
+					detailRanges: [100,750,1500,10000]
 				});
 
 				terrainMap.init({
-					width: 5000,	
-					depth: 5000
+					data: dataArray,
+					width: 2500,	
+					depth: 2500
 				});
 
 				cameraControls = new THREE.MapControls({
@@ -95,7 +107,6 @@
 					}
 				});
 				cameraControls.init();
-				cameraControls._cameraRadius = 500;
 
 				// transparently support window resize
 				THREEx.WindowResize.bind(renderer, camera);

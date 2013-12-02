@@ -88,11 +88,13 @@ THREE.DynamicTerrainMap.prototype.init = function (parameters, mainCallback) {
     return;
   }
 
-	if( parameters.imageUrl ) {
+  if( parameters.data && parameters.width && parameters.depth ) {
+    this._createArrayHeightMap(parameters.data, parameters.width, parameters.depth, mainCallback);
+  } else if( parameters.imageUrl ) {
 	  this._loadImageHeightMap(parameters.imageUrl,mainCallback);
 	} else {
-    parameters.flatWidth = parameters.flatWidth ? parameters.flatWidth : 1000;
-    parameters.flatDepth = parameters.flatDepth ? parameters.flatDepth : parameters.flatWidth;
+    parameters.width = parameters.width ? parameters.width : 1000;
+    parameters.depth = parameters.depth ? parameters.depth : parameters.width;
     this._createFlatHeightMap(parameters.flatWidth,parameters.flatDepth,mainCallback);
   }
 }
@@ -110,14 +112,13 @@ THREE.DynamicTerrainMap.prototype.position = function () {
 }
 
 // TODO - Add RayCaster for interpolation with appropriate geometry
-THREE.DynamicTerrainMap.prototype.heightAt = function (x,z,log) {
+THREE.DynamicTerrainMap.prototype.heightAt = function (x,z) {
 
   x = Math.round(x * 100) / 100;
   z = Math.round(z * 100) / 100;
 
   // Make sure point is in range.
   if( x < 0 || x > this._width || z < 0 || z > this._depth ) {
-    console.log("WHOAH BAD!");
     return undefined;
   }
 
@@ -136,14 +137,6 @@ THREE.DynamicTerrainMap.prototype.heightAt = function (x,z,log) {
   sw.y = this._heightMap[this._getHeightMapArrayPosition(sw.x,sw.z)];
   se.y = this._heightMap[this._getHeightMapArrayPosition(se.x,se.z)];
   
-  if( log ) {
-    console.log(nw);
-    console.log(ne);
-    console.log(sw);
-    console.log(se);
-
-  }
-
   var dx = ( x - Math.floor(x) );
   var dz = ( z - Math.floor(z) );
 
@@ -153,7 +146,7 @@ THREE.DynamicTerrainMap.prototype.heightAt = function (x,z,log) {
       se.y, 
       ( ( 1 + dx - dz ) / 2 )
     ),
-    ( dx > ( 1 - dz ) ) ? ne.y : se.y,
+    ( dx > ( 1 - dz ) ) ? ne.y : sw.y,
     Math.abs(1 - dx - dz )
   );
 }
@@ -211,6 +204,23 @@ THREE.DynamicTerrainMap.prototype._createFlatHeightMap = function (width, depth,
     this._heightMap[i] = 0; // Ground level.
   }
 
+  this._generateMap(callback);
+}
+
+THREE.DynamicTerrainMap.prototype._createArrayHeightMap = function (data, width, depth, callback) {
+  this._width = width;
+  this._depth = depth;
+  this._heightMapLength = this._width * this._depth;
+  
+  // Zero-fill
+  if( data.length != ( width * depth ) ) {
+    for( var i = data.length; i < this._heightMapLength; i++ ) {
+      data[i] = 0;
+    }
+  }
+
+  this._heightMap = data;
+  
   this._generateMap(callback);
 }
 
