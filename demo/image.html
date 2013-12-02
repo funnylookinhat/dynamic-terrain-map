@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+	<head>
+		<title>DynamicTerrainMap - Flat World Demo</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<script src="js/three.js/three.min.js"></script>
+		<script src="js/three.js/Detector.js"></script>
+		<script src="js/three.js/Stats.js"></script>
+
+		<script src="js/threex/THREEx.screenshot.js"></script>
+		<script src="js/threex/THREEx.FullScreen.js"></script>
+		<script src="js/threex/THREEx.WindowResize.js"></script>
+
+		<script src="js/GenericTerrainMaterial.js"></script>
+		<script src="js/GenericWireframeMaterial.js"></script>
+		<script src="js/MapControls.js"></script>
+
+		<script src="../src/DynamicTerrainMap.js"></script>
+		<script src="../src/DynamicTerrainMapChunk.js"></script>
+		<script src="../src/DynamicTerrainMapChunkBuilder.js"></script>
+		<!-- REQUIRED: <script src="../src/DynamicTerrainMapChunkWorker.js"></script> -->
+
+		<link href="css/main.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<div id="container"></div>
+		<div id="info">
+			<div class="top">
+				<a href="http://github.com/funnylookinhat/dynamic-terrain-map">THREE.DynamicTerrainMap</a> - Flat World Demonstration
+			</div>
+			<div class="bottom" id="inlineDoc" >
+				wasd = move camera, qe = rotate camera, rf = adjust camera height, scrollwheel = zoom in/out
+			</div> 
+		</div> 
+
+		<script type="text/javascript">
+			var stats, scene, renderer;
+			var camera, cameraControls;
+			var terrainMap;
+
+			init();
+			//animate();
+
+			function init(){
+
+				if( Detector.webgl ){
+					renderer = new THREE.WebGLRenderer({
+						antialias : true,
+						preserveDrawingBuffer : true
+					});
+					renderer.setClearColorHex( 0xBBBBBB, 1 );
+				}
+				else
+				{
+					Detector.addGetWebGLMessage();
+					return false;
+				}
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.getElementById('container').appendChild(renderer.domElement);
+
+				stats = new Stats();
+				stats.domElement.style.position	= 'absolute';
+				stats.domElement.style.bottom	= '0px';
+				document.body.appendChild( stats.domElement );
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 20000 );
+				scene.add(camera);
+
+				var material = new THREE.GenericTerrainMaterial();
+
+				terrainMap = new THREE.DynamicTerrainMap({
+					scene: scene,
+					camera: camera,
+					position: {x: 0, y: 0, z: 0},
+					debugMode: false,
+					workerScriptLocation: '/src/DynamicTerrainMapChunkWorker.js',
+					chunkShowFarthest: false,
+					material: material.generateMaterial(),
+					detailRanges: [100,750,1500,10000],
+					convertToFloat: function (rgba) {
+						return ( rgba.r + rgba.g + rgba.b) ;
+					}
+				});
+
+				terrainMap.init({
+					imageUrl: 'images/height-test-4700.png'
+				}, function () {
+					animate();
+				});
+
+				cameraControls = new THREE.MapControls({
+					camera: camera,
+					moveCallback: function () {
+						terrainMap.checkGeometry();
+					}
+				});
+				cameraControls.init();
+
+				// transparently support window resize
+				THREEx.WindowResize.bind(renderer, camera);
+				
+				/*
+				// allow 'p' to make screenshot
+				THREEx.Screenshot.bindKey(renderer);
+				*/
+				/*
+				// allow 'f' to go fullscreen where this feature is supported
+				if( THREEx.FullScreen.available() ){
+					THREEx.FullScreen.bindKey();		
+					document.getElementById('inlineDoc').innerHTML	+= "- <i>f</i> for fullscreen";
+				}
+				*/
+
+				return true;
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				render();
+				stats.update();
+			}
+
+			function render() {
+				cameraControls.update();
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>
