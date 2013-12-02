@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<title>DynamicTerrainMap - Flat World Demo</title>
+		<title>DynamicTerrainMap - Simulated Walking Image World Demo</title>
 		
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
@@ -29,11 +29,11 @@
 		<div id="container"></div>
 		<div id="info">
 			<div class="top">
-				<a href="http://github.com/funnylookinhat/dynamic-terrain-map">THREE.DynamicTerrainMap</a> - Flat World Demonstration
+				<a href="http://github.com/funnylookinhat/dynamic-terrain-map">THREE.DynamicTerrainMap</a> - Simulated Walking Image World Demo
 			</div>
-			<div class="bottom" id="inlineDoc" >
+			<!--<div class="bottom" id="inlineDoc" >
 				wasd = move camera, qe = rotate camera, rf = adjust camera height, scrollwheel = zoom in/out
-			</div> 
+			</div>--> 
 		</div> 
 
 		<script type="text/javascript">
@@ -85,7 +85,7 @@
 					workerScriptLocation: '/src/DynamicTerrainMapChunkWorker.js',
 					chunkShowFarthest: false,
 					material: material.generateMaterial(),
-					detailRanges: [100,750,1500,10000],
+					detailRanges: [100,750,1500,3000],
 					convertToFloat: function (rgba) {
 						return ( rgba.r + rgba.g + rgba.b) ;
 					}
@@ -135,10 +135,10 @@
 			}
 
 			function render() {
-				camera.position.x -= 0.5;
-				camera.position.z -= 0.5;
+				camera.position.x -= 1.0;
+				camera.position.z -= 1.0;
 				camera.position.y = 1 + terrainMap.heightAt(camera.position.x + terrainMap.width() / 2 , camera.position.z + terrainMap.depth() / 2 );
-				if( i++ % 1000 == 0 ) {
+				if( i++ % 100 == 0 ) {
 					terrainMap.checkGeometry();
 				}
 				//cameraControls.update();
