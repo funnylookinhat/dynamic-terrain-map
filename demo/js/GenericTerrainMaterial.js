@@ -37,7 +37,7 @@ THREE.GenericTerrainMaterial = function (parameters) {
 		delta: 45
 	});
 
-	this._textureRepeat = parameters.textureRepeat ? parameters.textureRepeat : 10;
+	this._textureRepeat = parameters.textureRepeat ? parameters.textureRepeat : 1;
 
 	this._mixHeight = 10;
 }
