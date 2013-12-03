@@ -72,20 +72,35 @@
 				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 20000 );
 				scene.add(camera);
 
+				function generateDataPoint(x,z) {
+					return ( 25 * Math.cos(x / 100) + 25 * Math.sin(z / 100) );
+				}
+
+				var width = 5000;
+				var depth = 5000;
+
+				var dataArray = new Float32Array(width * depth);
+				for( var x = 0; x < width; x++ ) {
+					for( var z = 0; z < depth; z++ ) {
+						dataArray[( x * width + z )] = generateDataPoint( x - ( width / 2 ) , z - ( depth / 2 ) );
+					}
+				}
+
 				terrainMap = new THREE.DynamicTerrainMap({
 					scene: scene,
 					camera: camera,
 					position: {x: 0, y: 0, z: 0},
 					debugMode: true,
 					workerScriptLocation: '../src/DynamicTerrainMapChunkWorker.js',
-					chunkShowFarthest: false,
-					detailRanges: [50,100,250,1000],
+					chunkShowFarthest: true,
+					detailRanges: [250,500,1000],
 					mapChunkSize: 100
 				});
 
 				terrainMap.init({
-					width: 5000,	
-					depth: 5000
+					data: dataArray,
+					width: width,	
+					depth: depth
 				});
 
 				cameraControls = new THREE.MapControls({

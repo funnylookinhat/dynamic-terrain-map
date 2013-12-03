@@ -95,7 +95,7 @@ THREE.DynamicTerrainMap.prototype.init = function (parameters, mainCallback) {
 	} else {
     parameters.width = parameters.width ? parameters.width : 1000;
     parameters.depth = parameters.depth ? parameters.depth : parameters.width;
-    this._createFlatHeightMap(parameters.flatWidth,parameters.flatDepth,mainCallback);
+    this._createFlatHeightMap(parameters.width,parameters.depth,mainCallback);
   }
 }
 
