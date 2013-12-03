@@ -164,10 +164,14 @@
 				stats.update();
 			}
 
+			function updateCameraHeight() {
+				camera.position.y = 2 + terrainMap.heightAt(camera.position.x + terrainMap.width() / 2 , camera.position.z + terrainMap.depth() / 2 );
+			}
+
 			function render() {
 				camera.position.x -= 1.0;
 				camera.position.z -= 1.0;
-				camera.position.y = 2 + terrainMap.heightAt(camera.position.x + terrainMap.width() / 2 , camera.position.z + terrainMap.depth() / 2 );
+				updateCameraHeight();
 				if( i++ % 100 == 0 ) {
 					terrainMap.checkGeometry();
 				}
