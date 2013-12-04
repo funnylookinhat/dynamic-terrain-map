@@ -75,7 +75,9 @@
 				camera.position.set(1750,200,1750);
 				camera.lookAt({x:0,y:1,z:0});
 
-				var material = new THREE.GenericTerrainMaterial();
+				var material = new THREE.GenericTerrainMaterial({
+					textureRepeat: 1
+				});
 
 				terrainMap = new THREE.DynamicTerrainMap({
 					scene: scene,
@@ -85,7 +87,7 @@
 					workerScriptLocation: '../src/DynamicTerrainMapChunkWorker.js',
 					chunkShowFarthest: false,
 					material: material.generateMaterial(),
-					detailRanges: [100,750,1500,3000],
+					detailRanges: [100,1500,2500,3500],
 					convertToFloat: function (rgba) {
 						return ( rgba.r + rgba.g + rgba.b);
 					}

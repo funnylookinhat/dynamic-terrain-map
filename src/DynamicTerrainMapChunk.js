@@ -253,7 +253,6 @@ THREE.DynamicTerrainMapChunk.prototype._updateGeometry = function () {
     };
 
     offsets.push(lastChunk);
-
     _this.updateChunkGeometry(_this._currentGeometryDistanceIndex, xVertices, zVertices, xOffset, zOffset, indices,positions,normals,uvs,offsets); 
   }
 }
