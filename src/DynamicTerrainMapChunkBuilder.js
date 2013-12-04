@@ -88,7 +88,6 @@ THREE.DynamicTerrainMapChunkBuilder.prototype._workerCallback = function (e, sel
     var zVertices = e.data.zVertices;
     var xOffset = e.data.xOffset;
     var zOffset = e.data.zOffset;
-    console.log('INDEX: '+distanceIndex+' / OFFSET: '+xOffset+','+zOffset+' / VERTICES: '+xVertices+','+zVertices);
     self._sendChunkGeometry(mapChunkIndex, distanceIndex, xVertices, zVertices, xOffset, zOffset, bufferGeometryIndices,bufferGeometryPositions,bufferGeometryNormals,bufferGeometryUvs,bufferGeometryOffsets);
     // Grab the next
     self._getNextJob(workerId, self);
