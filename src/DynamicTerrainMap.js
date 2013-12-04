@@ -229,8 +229,8 @@ THREE.DynamicTerrainMap.prototype._generateMap = function (callback) {
   this._map = [];
 
   if( this._useWorkers ) {
-    this._chunkBuilder = new THREE.DynamicTerrainMapChunkBuilder();
-    this._chunkBuilder.init({
+    _this._chunkBuilder = new THREE.DynamicTerrainMapChunkBuilder();
+    _this._chunkBuilder.init({
       workerCount: 2,
       workerScriptLocation: this._workerScriptLocation,
       width: this._width,
@@ -276,7 +276,7 @@ THREE.DynamicTerrainMap.prototype._generateMap = function (callback) {
         camera: this._camera,
         scene: this._scene,
         useWorkers: this._useWorkers,
-        buildChunkGeometry: ! this._userWorkers ? null : function (chunkIndex, distanceIndex, widthZero, depthZero, chunkWidth, chunkDepth) {
+        buildChunkGeometry: ! this._useWorkers ? null : function (chunkIndex, distanceIndex, widthZero, depthZero, chunkWidth, chunkDepth) {
           _this._chunkBuilder.updateChunkGeometry(
             {
               mapChunkIndex: chunkIndex,

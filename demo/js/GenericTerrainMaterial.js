@@ -97,6 +97,9 @@ THREE.GenericTerrainMaterial.prototype.generateMaterial = function () {
 			type: "t",
 			value: THREE.ImageUtils.loadTexture(this._textures[i].url)
 		};
+// INTERESTING RESULT
+//		uniforms['texture_'+this._textures[i].label].value.minFilter = THREE.NearestFilter;
+//		uniforms['texture_'+this._textures[i].label].value.magFilter = THREE.NearestFilter;
 	}
 	uniforms.textureRepeat = {
 		type: 'f',

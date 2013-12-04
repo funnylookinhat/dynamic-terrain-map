@@ -70,8 +70,8 @@ THREE.MapControls = function (parameters) {
   };
 
   this._keyThetaMappings = {
-    '81': 0.025,
-    '69': -0.025
+    '81': 0.05,
+    '69': -0.05
   };
 
   this._activePhiKeys = {
