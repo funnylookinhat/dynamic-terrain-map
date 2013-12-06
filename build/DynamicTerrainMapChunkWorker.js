@@ -89,7 +89,7 @@ self.onmessage = function (e) {
     var uvsLength = (numberOfVerts * 2);
     var offsets = [];
 
-   	var chunkSize = 21845;
+    var chunkSize = 21845;
 
     var startX = -geoWidth / 2;
     var startZ = -geoDepth / 2;

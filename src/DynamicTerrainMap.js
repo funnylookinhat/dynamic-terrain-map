@@ -247,7 +247,16 @@ THREE.DynamicTerrainMap.prototype._generateMap = function (callback) {
   var depthStart = this._position.z - Math.floor( this._depth / 2 ) + ( this._mapChunkSize / 2 );
   for( var j = 0; j < Math.ceil(this._width / this._mapChunkSize); j++ ) {
     for( var k = 0; k < Math.ceil(this._depth / this._mapChunkSize); k++ ) { 
-      var mapChunkIndex = ( j + k * Math.ceil(this._width / this._mapChunkSize) );
+      var mapChunkMaterial = this._material;
+      if( this._debugMode ) {
+        var genericWireframeMaterial = new THREE.GenericWireframeMaterial({
+          repeat: 10.0,
+          width: 0.005,
+          color: new THREE.Color(THREE.DynamicTerrainMap._debugModeColors[Math.floor(Math.random() * THREE.DynamicTerrainMap._debugModeColors.length)])
+        });
+        mapChunkMaterial = genericWireframeMaterial.generateMaterial();
+      }
+      var mapChunkIndex = parseInt( j + k * Math.ceil(this._width / this._mapChunkSize) );
       var mapChunkWidth = ( j * this._mapChunkSize + this._mapChunkSize > this._width )
              ? ( this._width - j * this._mapChunkSize )
              : this._mapChunkSize;
@@ -289,55 +298,7 @@ THREE.DynamicTerrainMap.prototype._generateMap = function (callback) {
           );
         }
       });
-      var mapChunkMaterial = this._material;
-      if( this._debugMode ) {
-        var genericWireframeMaterial = new THREE.GenericWireframeMaterial({
-          repeat: 10.0,
-          width: 0.005,
-          color: new THREE.Color(THREE.DynamicTerrainMap._debugModeColors[Math.floor(Math.random() * THREE.DynamicTerrainMap._debugModeColors.length)])
-        });
-        mapChunkMaterial = genericWireframeMaterial.generateMaterial();
-      }
-
-      /*
-      mapChunk.init({
-        mapIndex: mapChunkIndex,
-        width: mapChunkWidth,
-        depth: mapChunkDepth,
-        position: {
-          x: ( widthStart + j * this._mapChunkSize - ( ( this._mapChunkSize - mapChunkWidth ) / 2 ) ),
-          y: this._position.y,
-          z: ( depthStart + k * this._mapChunkSize - ( ( this._mapChunkSize - mapChunkDepth ) / 2 ) )
-        },
-        detailRanges: this._detailRanges,
-        chunkHoverRange: this._chunkHoverRange,
-        chunkShowFarthest: this._chunkShowFarthest,
-        heightMap: this._heightMap,
-        heightMapLength: this._heightMapLength,
-        heightMapWidth: this._width,
-        heightMapDepth: this._depth,
-        heightMapWidthZero: ( j * this._mapChunkSize ),
-        heightMapDepthZero: ( k * this._mapChunkSize ),
-        material: mapChunkMaterial,
-        camera: this._camera,
-        scene: this._scene,
-        useWorkers: this._useWorkers,
-        buildChunkGeometry: ! this._userWorkers ? null : function (chunkIndex, distanceIndex, widthZero, depthZero, chunkWidth, chunkDepth) {
-          _this._chunkBuilder.updateChunkGeometry(
-            {
-              mapChunkIndex: chunkIndex,
-              distanceIndex: distanceIndex,
-              heightMapWidthZero: widthZero,
-              heightMapDepthZero: depthZero,
-              chunkWidth: chunkWidth,
-              chunkDepth: chunkDepth
-            }
-          );
-        }
-      });
-      */
       this._map[mapChunkIndex] = mapChunk;
-      this._map.push(mapChunk);
     }
   }
 
