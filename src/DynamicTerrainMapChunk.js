@@ -20,13 +20,13 @@ THREE.DynamicTerrainMapChunk = function (parameters) {
   this._chunkShowFarthest = parameters.chunkShowFarthest;
 
   this._position = parameters.position ? parameters.position : {x:0,y:0,z:0};
-  this._mapIndex = parameters.mapIndex ? parameters.mapIndex : null;
-  this._heightMap = parameters.heightMap ? parameters.heightMap : null;
-  this._heightMapLength = parameters.heightMapLength ? parameters.heightMapLength : null;
-  this._heightMapWidth = parameters.heightMapWidth ? parameters.heightMapWidth : null;
-  this._heightMapDepth = parameters.heightMapDepth ? parameters.heightMapDepth : null;
-  this._heightMapWidthZero = parameters.heightMapWidthZero ? parameters.heightMapWidthZero : null;
-  this._heightMapDepthZero = parameters.heightMapDepthZero ? parameters.heightMapDepthZero : null;
+  this._mapIndex = parameters.mapIndex;
+  this._heightMap = parameters.heightMap;
+  this._heightMapLength = parameters.heightMapLength;
+  this._heightMapWidth = parameters.heightMapWidth;
+  this._heightMapDepth = parameters.heightMapDepth;
+  this._heightMapWidthZero = parameters.heightMapWidthZero;
+  this._heightMapDepthZero = parameters.heightMapDepthZero;
 
   // Declare some privates.
   this._geometry = null;
@@ -83,13 +83,19 @@ THREE.DynamicTerrainMapChunk.prototype.updateChunkGeometry = function (distanceI
     delete this._geometry;
   }
 
+  if( this._mapIndex == 0 ) {
+    //this._material = new THREE.MeshBasicMaterial({color: new THREE.Color(0xff0000)});
+  }
+
   this._geometry = bufferGeometry;
   this._mesh = new THREE.Mesh(
     this._geometry,
     this._material
   );
   
-  this._mesh.position.set(this._position.x + xOffset,this._position.y,this._position.z + zOffset);
+  var yOffset = 0;//-distanceIndex * .1 - this._mapIndex * .1;
+
+  this._mesh.position.set(this._position.x + xOffset,this._position.y + yOffset,this._position.z + zOffset);
   this._scene.add(this._mesh);
 
   this._updating = false;
@@ -251,7 +257,9 @@ THREE.DynamicTerrainMapChunk.prototype._updateGeometry = function () {
       index: lastChunkVertStart,
       count: ( ( zVertices - 1 ) - lastChunkRow) * ( xVertices - 1 ) * 6
     };
-
+    if( this._mapIndex == 0 ) {
+      console.log('b: '+startX+','+startZ+' : '+xOffset+','+zOffset);
+    }
     offsets.push(lastChunk);
     _this.updateChunkGeometry(_this._currentGeometryDistanceIndex, xVertices, zVertices, xOffset, zOffset, indices,positions,normals,uvs,offsets); 
   }
