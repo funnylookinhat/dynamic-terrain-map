@@ -25,8 +25,8 @@
 
 		<link href="css/main.css" rel="stylesheet" type="text/css" />
 
-		<meta property="og:image" content="images/walk-preview.jpg" />
-		<meta itemprop="image" content="images/walk-preview.jpg" />
+		<meta property="og:image" content="http://funnylookinhat.com/dynamic-terrain-map/demo/images/walk-preview.jpg" />
+		<meta itemprop="image" content="http://funnylookinhat.com/dynamic-terrain-map/demo/images/walk-preview.jpg" />
 	</head>
 	<body>
 		<div id="container"></div>
@@ -39,8 +39,6 @@
 			</div>--> 
 		</div> 
 
-		<img src="images/walk-preview.jpg" id="preview-image" style="height: 720px; margin: 0px auto;">
-		
 		<script type="text/javascript">
 			var stats, scene, renderer;
 			var camera, cameraControls;
@@ -63,9 +61,6 @@
 					Detector.addGetWebGLMessage();
 					return false;
 				}
-
-				var previewImage = document.getElementById("preview-image");
-				previewImage.parentNode.removeChild(previewImage);
 
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.getElementById('container').appendChild(renderer.domElement);
