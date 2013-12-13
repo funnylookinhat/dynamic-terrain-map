@@ -8,34 +8,37 @@ THREE.GenericTerrainMaterial = function (parameters) {
 		parameters = {};
 	}
 
-	// As a parameter later on.
-	this._textures = [];
-	this._textures.push({
-		label: 'dirt',
-		url: 'images/textures/reality/grass-and-rock.png',
-		start: 0 // Flag
-	});
+	this._textures = parameters.textures ? parameters.textures : false;
 
-	this._textures.push({
-		label: 'grass',
-		url: 'images/textures/reality/grass.png',
-		start: 60,
-		delta: 100
-	});
+	if( this._textures == false ) {
+		this._textures = [];
+		this._textures.push({
+			label: 'dirt',
+			url: 'images/textures/reality/grass-and-rock.png',
+			start: 0 // Flag
+		});
 
-	this._textures.push({
-		label: 'rock',
-		url: 'images/textures/reality/rock.png',
-		start: 150,
-		delta: 15
-	});
+		this._textures.push({
+			label: 'grass',
+			url: 'images/textures/reality/grass.png',
+			start: 60,
+			delta: 100
+		});
 
-	this._textures.push({
-		label: 'snow',
-		url: 'images/textures/reality/snow.png',
-		start: 190,
-		delta: 45
-	});
+		this._textures.push({
+			label: 'rock',
+			url: 'images/textures/reality/rock.png',
+			start: 150,
+			delta: 15
+		});
+
+		this._textures.push({
+			label: 'snow',
+			url: 'images/textures/reality/snow.png',
+			start: 190,
+			delta: 45
+		});
+	}
 
 	this._textureRepeat = parameters.textureRepeat ? parameters.textureRepeat : 1;
 
