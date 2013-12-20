@@ -122,7 +122,9 @@ THREE.DynamicTerrainMap.prototype.heightAt = function (x,z) {
     return undefined;
   }
 
-  if( this._heightMap[this._getHeightMapArrayPosition(x,z)] ) {
+  if( Math.round(x) == x &&
+      Math.round(z) == z && 
+      this._heightMap[this._getHeightMapArrayPosition(x,z)] ) {
     return this._heightMap[this._getHeightMapArrayPosition(x,z)];
   }
 
@@ -136,6 +138,12 @@ THREE.DynamicTerrainMap.prototype.heightAt = function (x,z) {
   ne.y = this._heightMap[this._getHeightMapArrayPosition(ne.x,ne.z)];
   sw.y = this._heightMap[this._getHeightMapArrayPosition(sw.x,sw.z)];
   se.y = this._heightMap[this._getHeightMapArrayPosition(se.x,se.z)];
+
+  console.log(nw);
+  console.log(ne);
+  console.log(sw);
+  console.log(se);
+
   
   var dx = ( x - Math.floor(x) );
   var dz = ( z - Math.floor(z) );
