@@ -40,6 +40,7 @@
 			var stats, scene, renderer;
 			var camera, cameraControls;
 			var terrainMap;
+			var light;
 
 			init();
 			//animate();
@@ -51,7 +52,7 @@
 						antialias : true,
 						preserveDrawingBuffer : true
 					});
-					renderer.setClearColorHex( 0xBBBBBB, 1 );
+					//renderer.setClearColorHex( 0x000000, 1 );
 				}
 				else
 				{
@@ -72,6 +73,11 @@
 				camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 20000 );
 				scene.add(camera);
 
+				light = new THREE.DirectionalLight(0xffe773,0.8);
+				light.position.set( 500, 10000, 500 );
+				light.shadowCameraVisible = true;
+				scene.add(light);
+
 				var material = new THREE.GenericTerrainMaterial();
 
 				terrainMap = new THREE.DynamicTerrainMap({
@@ -81,9 +87,9 @@
 					debugMode: false,
 					useWorkers: true,
 					workerScriptLocation: '../src/DynamicTerrainMapChunkWorker.js',
-					chunkShowFarthest: false,
+					chunkShowFarthest: true,
 					material: material.generateMaterial(),
-					detailRanges: [100,750,1500,10000],
+					detailRanges: [100,750,1500],
 					convertToFloat: function (rgba) {
 						return ( rgba.r + rgba.g + rgba.b) ;
 					}

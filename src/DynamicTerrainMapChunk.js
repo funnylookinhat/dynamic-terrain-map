@@ -93,7 +93,7 @@ THREE.DynamicTerrainMapChunk.prototype.updateChunkGeometry = function (distanceI
     this._material
   );
   
-  var yOffset = 0;//-distanceIndex * .1 - this._mapIndex * .1;
+  var yOffset = 0;
 
   this._mesh.position.set(this._position.x + xOffset,this._position.y + yOffset,this._position.z + zOffset);
   this._scene.add(this._mesh);
